@@ -38,9 +38,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'LittleLemonApi',
+    'rest_framework.authtoken',
     'rest_framework',
     'djoser',
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        # ...
+    ],
+}
 DJOSER = {
     "USER_ID_FIELD":"username"
 }
