@@ -10,12 +10,21 @@ from LittleLemonApi.permissions import Permissions
 
 from LittleLemonApi.serializers import MenuItemSerializer
 # Create your views here.
-class MenuItemsView(viewsets.ModelViewSet):
+class MenuItemsViewSet(viewsets.ModelViewSet):
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
+    
     def create(self, request, *args, **kwargs):
-        print (self.request.user.groups.all())
         if Permissions.is_manager(request):
             return super().create(request, *args, **kwargs)
-        
+        return Response(status=status.HTTP_403_FORBIDDEN)
+    
+    def update(self, request, *args, **kwargs):
+        if Permissions.is_manager(request):
+            return super().update(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+    
+    def destroy(self, request, *args, **kwargs):
+        if Permissions.is_manager(request):
+            return super().destroy(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)
