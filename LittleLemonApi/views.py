@@ -28,3 +28,7 @@ class MenuItemsViewSet(viewsets.ModelViewSet):
         if Permissions.is_manager(request):
             return super().destroy(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)
+    
+class MenuItemsView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = MenuItem.objects.all()
+    serializer_class = MenuItemSerializer
