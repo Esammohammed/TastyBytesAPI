@@ -28,7 +28,24 @@ class MenuItemsViewSet(viewsets.ModelViewSet):
         if Permissions.is_manager(request):
             return super().destroy(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)
-    
+
+'''
+MenuItemsView is a class-based view that inherits from generics.ListCreateAPIView. 
+This view will be used to list, update, and delete single item.
+'''
 class MenuItemsView(generics.RetrieveUpdateDestroyAPIView):
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
+    '''
+    The update and delete methods are overridden to check if the user is a manager.
+    '''
+    def update(self, request, *args, **kwargs):
+        if Permissions.is_manager(request):
+            return super().update(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+    
+    def delete(self, request, *args, **kwargs):
+        if Permissions.is_manager(request):
+            return super().delete(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+    
