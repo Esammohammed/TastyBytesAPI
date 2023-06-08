@@ -1,15 +1,9 @@
-from copy import deepcopy
-from django.shortcuts import render
-from rest_framework import viewsets
-from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from LittleLemonApi.models import Cart, MenuItem, OrderItem
+from LittleLemonApi.models import Cart, MenuItem
 from rest_framework import status
-from LittleLemonApi.serializers import MenuItemSerializer
 from LittleLemonApi.permissions import Permissions
-from django.contrib.auth.models import User, Group
-from LittleLemonApi.serializers import MenuItemSerializer 
+from django.contrib.auth.models import User
 
 class CustomerView (APIView):
     
