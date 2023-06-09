@@ -1,43 +1,30 @@
-
-import datetime
+from django.contrib.auth.models import User
+from rest_framework import status
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from LittleLemonApi.models import Cart, Order, OrderItem
-from LittleLemonApi.permissions import Permissions 
-from rest_framework import status
-from django.contrib.auth.models import User
+from LittleLemonApi.permissions import Permissions
 
+from LittleLemonApi.models import Order, OrderItem
 from LittleLemonApi.serializers import OrderItemSerializer, OrderSerializer
-class OrderView(APIView):
-
-    serializer_class = OrderSerializer
-    def post(self,request):
-        if Permissions.is_customer(request):
-            username= request.user
-            user =User.objects.get(username=username)
-            carts = Cart.objects.filter(user=user)
-            total_price =0
-            order =Order.objects.create(user=user, total=0, date= datetime.datetime.now())
-            for cart in carts:
-                total_price += cart.price
-                OrderItem.objects.create(order=order, menuitem=cart.menuitem, quantity=cart.quantity,unit_price=cart.unit_price,price=cart.price)
-            order.total = total_price
-            order.save()
-            carts.delete()
-            return Response(status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_403_FORBIDDEN)
-    
-    def get(self, request):
-        if Permissions.is_customer(request):
-            username = request.user
-            orders = Order.objects.filter(user=username)
-            serialized_orders = []
+class OrderView (APIView):
+    def get (self,request,pk):
+        user = request.user
+        order = get_object_or_404(Order,pk=pk,user=user)
+        order_items = OrderItem.objects.filter(order=order)
+        order_items = OrderItemSerializer(order_items,many=True).data
+        serialized_order = OrderSerializer(order).data
+        serialized_order['order_items'] = order_items
+        return Response(serialized_order) 
+    def patch(self,requset,pk):
+        if Permissions.is_manager(requset) or Permissions.is_delivery_crew(requset):
+            serialized_order= requset.data
+            order = get_object_or_404 (Order,pk=pk)
+            updated_order_serialized = OrderSerializer(order,serialized_order,partial=True)
+            if (updated_order_serialized.is_valid()):
+                updated_order_serialized.save()
+                return Response(updated_order_serialized.data)
             
-            for order in orders:
-                order_items = OrderItem.objects.filter(order=order)
-                serialized_order_items =OrderItemSerializer(order_items,many=True).data
-                serialized_order = OrderSerializer(order).data
-                serialized_order['items']= serialized_order_items
-                serialized_orders.append(serialized_order)
-            return Response(serialized_orders)
-        return Response(status=status.HTTP_403_FORBIDDEN)
+        return Response(updated_order_serialized.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        
