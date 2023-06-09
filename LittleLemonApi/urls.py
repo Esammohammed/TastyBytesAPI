@@ -4,6 +4,7 @@ from LittleLemonApi.views.menu_items_view import MenuItemsView
 from LittleLemonApi.views.manager_view import ManagerView
 from LittleLemonApi.views.delivery_crew_view import DeliveryCrewView
 from LittleLemonApi.views.customer_view import CustomerView
+from LittleLemonApi.views.order_view_set import OrderViewSet
 from LittleLemonApi.views.order_view import OrderView
 
 urlpatterns = [
@@ -12,6 +13,7 @@ urlpatterns = [
     path('groups/manager/users/',ManagerView.as_view() ),
     path('groups/delivery-crew/users/',DeliveryCrewView.as_view() ),
     path('cart/menu-items/', CustomerView.as_view()),
-    path('orders/',OrderView.as_view())
+    path('orders/',OrderViewSet.as_view()),
+    path('orders/<int:pk>',OrderView.as_view())
    
 ]
