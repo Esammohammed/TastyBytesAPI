@@ -9,6 +9,9 @@ from LittleLemonApi.serializers import MenuItemSerializer
 class MenuItemsViewSet(viewsets.ModelViewSet):
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
+    ordering_fields=['price']
+    search_fields=['title']
+    perpage=1
     
     def create(self, request, *args, **kwargs):
         if Permissions.is_manager(request):
